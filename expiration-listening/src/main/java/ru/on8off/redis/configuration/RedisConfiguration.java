@@ -8,11 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
-import org.springframework.data.redis.serializer.RedisSerializer;
-import ru.on8off.redis.client.dto.Event;
 
 import java.time.Duration;
 
@@ -31,26 +28,19 @@ public class RedisConfiguration {
     Duration socketTimeout;
 
     @Bean
-    public ChannelTopic topic() {
-        return new ChannelTopic("messageQueue");
-    }
-
-    @Bean
-    public RedisTemplate<String, Event> publishRedisTemplate(){
-        var template = new RedisTemplate<String, Event>();
+    public StringRedisTemplate stringRedisTemplate(){
+        var template = new StringRedisTemplate();
         template.setConnectionFactory(lettuceConnectionFactory());
-        template.setKeySerializer(RedisSerializer.string());
-        template.setValueSerializer(RedisSerializer.json());
         return template;
     }
 
     @Bean
-    public RedisMessageListenerContainer redisContainer() {
+    public RedisMessageListenerContainer redisContainer(LettuceConnectionFactory connectionFactory) {
         var container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(lettuceConnectionFactory());
+        container.setConnectionFactory(connectionFactory);
         return container;
     }
-
+    
     @Bean
     public LettuceConnectionFactory lettuceConnectionFactory() {
         var socketOptions = SocketOptions.builder().connectTimeout(socketTimeout).build();

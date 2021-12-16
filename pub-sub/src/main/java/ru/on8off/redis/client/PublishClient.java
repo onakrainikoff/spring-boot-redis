@@ -3,10 +3,10 @@ package ru.on8off.redis.client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import ru.on8off.redis.client.dto.Event;
 
-@Service
+@Component
 public class PublishClient {
     @Autowired
     private RedisTemplate<String, Event> publishRedisTemplate;
